@@ -3,23 +3,28 @@
 
 ## 使い方
 
-初めて使用するときは、Pythonモジュールを予めインストールしておく。
-```
-python -m pip install casadi
-python -m pip install do_mpc  
-python -m pip install pandas  
-python -m pip install numpy  
-```
+- 初めて使用するときは、Pythonモジュールを予めインストールしておく。
+  ```
+  python -m pip install casadi
+  python -m pip install do_mpc  
+  python -m pip install pandas  
+  python -m pip install numpy  
+  ```
+  - 上記の他に以下のモジュールも必要になることもある
+    ```
+    python -m pip install onnx
+    python -m pip install asyncua
+    ```
 
-ターミナル等で以下のコマンドでMPCのフォルダをクローンし、ディレクトリを移動する。
-```
-git clone https://github.com/Keita058/MPCforMMGship.git
-cd MPCforMMGship
-```
-pythonファイル内で各パラメータを調整した後に以下のコマンドでMPCを実行する
-```
-python <python_file_name>
-```
+- ターミナル等で以下のコマンドでMPCのフォルダをクローンし、ディレクトリを移動する。
+  ```
+  git clone https://github.com/Keita058/MPCforMMGship.git
+  cd MPCforMMGship
+  ```
+- pythonファイル内で各パラメータを調整した後に以下のコマンドでMPCを実行する
+  ```
+  python <python_file_name>
+  ```
 
 
 ## 各フォルダ、ファイルについて
