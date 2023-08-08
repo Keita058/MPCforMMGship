@@ -256,7 +256,7 @@ if average: #推定値の平均値を使用する場合
 
     tvp_template=mpc.get_tvp_template()
     def tvp_fun(t_now):
-        for k in range(mpc.n_horizon):
+        for k in range(n_horizon):
             if int(t_now)+k<n_steps:
                 tvp_template['_tvp',k,'x1_ref']=x10_ref[int(t_now)+k]
                 tvp_template['_tvp',k,'y1_ref']=y10_ref[int(t_now)+k]
@@ -469,7 +469,7 @@ else:
         tvp_template=mpc.get_tvp_template()
 
         def tvp_fun(t_now):
-            for k in range(mpc.n_horizon):
+            for k in range(n_horizon):
                 if int(t_now)+k<n_steps:
                     tvp_template['_tvp',k,'x1_ref']=x10_ref[int(t_now)+k]
                     tvp_template['_tvp',k,'y1_ref']=y10_ref[int(t_now)+k]
