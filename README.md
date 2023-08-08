@@ -21,7 +21,7 @@
   git clone https://github.com/Keita058/MPCforMMGship.git
   cd MPCforMMGship
   ```
-- pythonファイル内で各パラメータを調整した後に以下のコマンドでmainのpythonファイルを実行することでMPCシミュレーションが実行できる
+- pythonファイル内で各パラメータを調整した後に以下のコマンドでmainから始まるpythonファイルを実行することでMPCシミュレーションが実行できる
   ```
   python <python_file_name>
   ```
