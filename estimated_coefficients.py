@@ -164,6 +164,7 @@ dt_now=get_time()
 dirname=dirname+dt_now
 os.makedirs(dirname,exist_ok=True)
 
+#推定値の平均値を用いてシミュレーションを行うかどうか
 average=False
 if average: #推定値の平均値を使用する場合
     os.makedirs(dirname+'/average',exist_ok=True)
