@@ -49,22 +49,23 @@ k_0 = 0.2931
 k_1 = -0.2753
 k_2 = -0.1385
 
+#軌道を読み込む関数
 def read_pos_data(file_name):
     df=pd.read_csv(file_name)
     psi,xc,yc,x1,y1,x2,y2=df['psi'],df['xc'],df['yc'],df['x1'],df['y1'],df['x2'],df['y2']
     return psi,xc,yc,x1,y1,x2,y2
-
+#制御入力を読み込む関数
 def read_act_data(file_name):
     df=pd.read_csv(file_name)
     npm,delta=df['npm'],df['delta']
     return npm,delta
-
+#速度を読み込む関数
 def read_vel_data(file_name):
     df=pd.read_csv(file_name)
     u,v,r=df['u'],df['v'],df['r']
     return u,v,r
 
-#運動方程式を有次元値で扱っている
+#MMGモデルによる船体の運動方程式の関数
 def X_H(u,v,r):
     U=np.sqrt(u**2+v**2)
     v_dash=v/U
@@ -83,7 +84,6 @@ def N_H(u,v,r):
     r_dash=r*L_pp/U
     return 0.5*ρ*L_pp**2*d*U**2*N_H_dash(v_dash,r_dash)
 
-#斜航角ではなく横方向の速度の無次元化成分を使う？
 def X_H_dash(β,r_dash):
     return -R_0_dash+X_vv_dash*β**2+X_vr_dash*β*r_dash+X_rr_dash*r_dash**2+X_vvvv_dash*β**4
 
@@ -129,6 +129,7 @@ def J(u,n_p):
 def T_P(u,n_p):
     return K_T(u,n_p)*ρ*n_p**2*D_p**4
 
+#出力フォルダにつける時刻の取得
 def get_time():
     dt_now=datetime.now()
     year=str(dt_now.year)
@@ -145,15 +146,15 @@ def get_time():
     return now_time
 
 
-control_duration=100
+control_duration=100 #船舶を操縦する時間の設定
 dirname='./output/output'
-n_horizon=100
+n_horizon=100 #予測する時間の長さ
 
 dt_now=get_time()
 dirname=dirname+dt_now
 os.makedirs(dirname,exist_ok=True)
 
-
+#操縦流体力微係数の設定
 R_0_dash = 0.022
 X_vv_dash = -0.040
 X_vr_dash = 0.002
@@ -173,9 +174,11 @@ N_vrr_dash = 0.055
 N_rrr_dash = -0.013
 R0=0.5*ρ*(L_pp**2)*d*R_0_dash #船体抵抗
 
+#MPCに関する設定
 model_type = 'continuous' # either 'discrete' or 'continuous'
 model = do_mpc.model.Model(model_type)
 
+#MPCの変数の名前,タイプの設定
 δ_set = model.set_variable(var_type='_u', var_name='δ_set', shape=(1,1)) #指示舵角
 n_p_set=model.set_variable(var_type='_u',var_name='n_p_set',shape=(1,1)) #指示プロペラ回転数
 
@@ -197,6 +200,7 @@ y1_ref=model.set_variable(var_type='_tvp',var_name='y1_ref',shape=(1,1)) #目標
 x2_ref=model.set_variable(var_type='_tvp',var_name='x2_ref',shape=(1,1)) #目標軌道のx座標
 y2_ref=model.set_variable(var_type='_tvp',var_name='y2_ref',shape=(1,1)) #目標軌道のy座標
 
+#MPCに使う運動方程式の設定
 model.set_rhs('u', (X_H(u,v,r)+X_R(u,v,r,δ,n_p)+X_P(u,v,δ,n_p)+(m+m_y)*v*r)/(m+m_x))
 model.set_rhs('v', (Y_H(u,v,r)+Y_R(u,v,r,δ,n_p)-(m+m_x)*u*r)/(m+m_y))
 model.set_rhs('r', (N_H(u,v,r)+N_R(u,v,r,δ,n_p))/(I_zG+J_z))
@@ -228,16 +232,17 @@ setup_mpc = {
 
 mpc.set_param(**setup_mpc)
 
+#評価関数の設定
 lterm=(model.x['x1']-model.tvp['x1_ref'])**2+(model.x['y1']-model.tvp['y1_ref'])**2+ \
     (model.x['x2']-model.tvp['x2_ref'])**2+(model.x['y2']-model.tvp['y2_ref'])**2
 mterm=lterm
 mpc.set_objective(mterm=mterm,lterm=lterm)
-
+#制御入力の滑らかさに関するr-termの重み付けの設定
 mpc.set_rterm(
     δ_set = 1e-3,
     n_p_set=1e-3
 )
-
+#MPCの制約条件の設定
 mpc.bounds['lower','_u', 'δ_set'] = - 45 * np.pi / 180
 mpc.bounds['upper','_u', 'δ_set'] = 45 * np.pi / 180
 mpc.bounds['lower','_x','u']=0.0
@@ -247,11 +252,11 @@ mpc.bounds['upper','_x','v']=5.0
 mpc.bounds['lower','_u','n_p_set']=0.0
 mpc.bounds['upper','_u','n_p_set']=30.0
 
+#目標軌道の読み込み
 psi0_ref,xc0_ref,yc0_ref,x10_ref,y10_ref,x20_ref,y20_ref=read_pos_data('./input/df_position.csv')
 n_steps=len(xc0_ref)
 
 tvp_template=mpc.get_tvp_template()
-
 def tvp_fun(t_now):
     for k in range(mpc.n_horizon):
         if int(t_now)+k<n_steps:
@@ -266,25 +271,21 @@ def tvp_fun(t_now):
             tvp_template['_tvp',k,'y2_ref']=y20_ref[n_steps-1]
     return tvp_template
 mpc.set_tvp_fun(tvp_fun)
-
 mpc.setup()
-
 estimator=do_mpc.estimator.StateFeedback(model)
 simulator = do_mpc.simulator.Simulator(model)
-
 simulator.set_param(t_step = 1)
-
 tvp_sim_template=simulator.get_tvp_template()
-
 def tvp_sim_fun(t_now):
     return tvp_sim_template
 simulator.set_tvp_fun(tvp_sim_fun)
-
 simulator.setup()
 
+#目標軌道を作成したときの制御入力と速度の読み込み
 npm_ref,delta_ref=read_act_data('./input/df_actuator.csv')
 u_ref,v_ref,r_ref=read_vel_data('./input/df_velocities.csv')
 
+#初期条件の設定
 x0 = np.array([xc0_ref[0],yc0_ref[0],x10_ref[0],y10_ref[0],x20_ref[0],y20_ref[0],psi0_ref[0],u_ref[0],v_ref[0],r_ref[0],delta_ref[0],npm_ref[0]]).reshape(-1,1)
 simulator.x0 = x0
 mpc.x0 = x0
@@ -295,7 +296,6 @@ mpc_graphics = do_mpc.graphics.Graphics(mpc.data)
 sim_graphics = do_mpc.graphics.Graphics(simulator.data)
 
 u0 = mpc.make_step(x0)
-
 u0 = mpc.make_step(x0)
 
 simulator.reset_history()
@@ -345,7 +345,7 @@ error=[]
 for i in range(min(control_duration,n_steps)):
     dist=(xc[i]-xc0_ref[i])**2+(yc[i]-yc0_ref[i])**2
     error.append(np.sqrt(dist))
-
+#データフレーム化し、csvファイルとして保存
 t=np.linspace(0,min(control_duration,n_steps-1),min(control_duration,n_steps))
 df=pd.DataFrame({'time':t,
     'xc':xc,
@@ -378,6 +378,6 @@ df=pd.DataFrame({'time':t,
     'npm_in':np_in,
     'error':error
     })
-
 df.to_csv(dirname+'/output.csv')
+
 print("Program terminated successfully.")
