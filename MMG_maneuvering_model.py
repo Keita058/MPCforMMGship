@@ -31,14 +31,14 @@ class MMG_model:
         self.κ = basic_params.κ
         self.f_α = basic_params.f_α
 
-        self.m=self.ρ * self.nabla 
-        self.I_zG=self.ρ * self.nabla * ((0.25 * self.L_pp) ** 2)  
-        self.η=self.D_p / self.H_R 
-        self.m_x=(0.5 * self.ρ * (self.L_pp ** 2) * self.d) * self.m_x_dash  
-        self.m_y=(0.5 * self.ρ * (self.L_pp ** 2) * self.d) * self.m_y_dash  
-        self.J_z=(0.5 * self.ρ * (self.L_pp ** 4) * self.d) * self.J_z_dash  
-        self.x_H=self.x_H_dash * self.L_pp  
-        self.x_R=self.x_R_dash*self.L_pp
+        self.m = basic_params.m
+        self.I_zG = basic_params.I_zG
+        self.η = basic_params.η
+        self.m_x = basic_params.m_x
+        self.m_y = basic_params.m_y 
+        self.J_z = basic_params.J_z 
+        self.x_H = basic_params.x_H
+        self.x_R = basic_params.x_R
 
         self.k_0 = mmg_params.k_0
         self.k_1 = mmg_params.k_1
