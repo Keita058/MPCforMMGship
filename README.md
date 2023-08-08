@@ -38,4 +38,13 @@
 `main_fixed_coefficients.py`:固定の微係数を設定してMPCを実行する。船体主要目・微係数等のパラメータは[Introduction of MMG standard method for ship maneuvering predictions](https://link.springer.com/article/10.1007/s00773-014-0293-y)内の数値を参考に設定。  
 
 
-`main_estimated_coefficients.py`:栗林手法によって推定された微係数を用いてMPCを実行する。168行付近のaverageをTrueにすることで推定値の平均値を用いてMPCを実行する。averageがFalseの場合はランダムに推定値が選ばれてMPCが実行される。  
+`main_estimated_coefficients.py`:栗林手法によって推定された微係数を用いてMPCを実行する。
+
+`get_parameters.py`:船体主要目、操縦流体力微係数およびMPC実行時におけるパラメータの設定に関する関数が置かれている。
+
+`MMG_maneuvering_model.py`:MMG3DoFモデルによる計算を行う関数が置かれている。
+
+`MPC_execute.py`:MPCシミュレーションを実行する際に用いる関数が置かれている。
+
+
+`make_output_files.py`:MPCシミュレーションの結果が入ったcsvファイルや、シミュレーションを行った際に用いた目標軌道・速度・制御入力や操縦流体力微係数のcsvファイルを出力するための関数が置かれている。
