@@ -21,7 +21,7 @@
   git clone https://github.com/Keita058/MPCforMMGship.git
   cd MPCforMMGship
   ```
-- pythonファイル内で各パラメータを調整した後に以下のコマンドでMPCを実行する
+- pythonファイル内で各パラメータを調整した後に以下のコマンドでmainのpythonファイルを実行することでMPCシミュレーションが実行できる
   ```
   python <python_file_name>
   ```
@@ -35,7 +35,7 @@
 `output`:MPCを実行した結果のcsvファイルが出力される。  
 
 
-`fixed_coefficients.py`:固定の微係数を設定してMPCを実行する。船体主要目・微係数等のパラメータは[Introduction of MMG standard method for ship maneuvering predictions](https://link.springer.com/article/10.1007/s00773-014-0293-y)内の数値を参考に設定。  
+`main_fixed_coefficients.py`:固定の微係数を設定してMPCを実行する。船体主要目・微係数等のパラメータは[Introduction of MMG standard method for ship maneuvering predictions](https://link.springer.com/article/10.1007/s00773-014-0293-y)内の数値を参考に設定。  
 
 
-`estimated_coefficients.py`:栗林手法によって推定された微係数を用いてMPCを実行する。168行付近のaverageをTrueにすることで推定値の平均値を用いてMPCを実行する。averageがFalseの場合はランダムに推定値が選ばれてMPCが実行される。  
+`main_estimated_coefficients.py`:栗林手法によって推定された微係数を用いてMPCを実行する。168行付近のaverageをTrueにすることで推定値の平均値を用いてMPCを実行する。averageがFalseの場合はランダムに推定値が選ばれてMPCが実行される。  
