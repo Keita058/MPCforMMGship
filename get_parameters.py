@@ -8,12 +8,6 @@ class InputFileNames:
     velocity_file: str
     actuator_file: str
 
-def set_input_file_names(coefficients_file, position_file, velocity_file, actuator_file):
-    return InputFileNames(coefficients_file=coefficients_file,
-                        position_file=position_file,
-                        velocity_file=velocity_file,
-                        actuator_file=actuator_file)
-
 @dataclasses.dataclass
 class BasicParams:
     ρ: float  # 海水密度
@@ -51,6 +45,55 @@ class BasicParams:
     x_H: float
     x_R: float
 
+@dataclasses.dataclass
+class MPCParams:
+    n_horizon: int
+    t_step: int
+    n_robust: int
+    store_full_solution: bool
+    δ_set: float
+    n_p_set: float
+    δ_max: float
+    δ_min: float
+    n_p_max: float
+    n_p_min: float
+    u_max: float
+    u_min: float
+    v_max: float
+    v_min: float
+    control_duration: int
+    model_type: str
+
+@dataclasses.dataclass
+class MMGManeuveringParams:
+    k_0: float
+    k_1: float
+    k_2: float
+    R_0_dash: float
+    X_vv_dash: float
+    X_vr_dash: float
+    X_rr_dash: float
+    X_vvvv_dash: float
+    Y_v_dash: float
+    Y_r_dash: float
+    Y_vvv_dash: float
+    Y_vvr_dash: float
+    Y_vrr_dash: float
+    Y_rrr_dash: float
+    N_v_dash: float
+    N_r_dash: float
+    N_vvv_dash: float
+    N_vvr_dash: float
+    N_vrr_dash: float
+    N_rrr_dash: float
+    R_0: float
+
+
+def set_input_file_names(coefficients_file, position_file, velocity_file, actuator_file):
+    return InputFileNames(coefficients_file=coefficients_file,
+                        position_file=position_file,
+                        velocity_file=velocity_file,
+                        actuator_file=actuator_file)
 
 def set_basic_params(ρ, L_pp, B, d, nabla, x_G, C_b, D_p, H_R, A_R, t_P, w_P0, 
     m_x_dash, m_y_dash, J_z_dash, t_R, x_R_dash, a_H, x_H_dash,
@@ -91,26 +134,6 @@ def set_basic_params(ρ, L_pp, B, d, nabla, x_G, C_b, D_p, H_R, A_R, t_P, w_P0,
                         x_R=x_R_dash*L_pp
     )
 
-@dataclasses.dataclass
-class MPCParams:
-    n_horizon: int
-    t_step: int
-    n_robust: int
-    store_full_solution: bool
-    δ_set: float
-    n_p_set: float
-    δ_max: float
-    δ_min: float
-    n_p_max: float
-    n_p_min: float
-    u_max: float
-    u_min: float
-    v_max: float
-    v_min: float
-    control_duration: int
-    model_type: str
-
-
 def set_mpc_params(n_horizon, t_step, n_robust, store_full_solution, 
     δ_set, n_p_set, δ_max, δ_min, n_p_max, n_p_min, 
     u_max, u_min, v_max, v_min, control_duration,model_type):
@@ -132,30 +155,6 @@ def set_mpc_params(n_horizon, t_step, n_robust, store_full_solution,
         control_duration=control_duration,
         model_type=model_type
         )
-
-@dataclasses.dataclass
-class MMGManeuveringParams:
-    k_0: float
-    k_1: float
-    k_2: float
-    R_0_dash: float
-    X_vv_dash: float
-    X_vr_dash: float
-    X_rr_dash: float
-    X_vvvv_dash: float
-    Y_v_dash: float
-    Y_r_dash: float
-    Y_vvv_dash: float
-    Y_vvr_dash: float
-    Y_vrr_dash: float
-    Y_rrr_dash: float
-    N_v_dash: float
-    N_r_dash: float
-    N_vvv_dash: float
-    N_vvr_dash: float
-    N_vrr_dash: float
-    N_rrr_dash: float
-    R_0: float
 
 def set_mmg_params(k_0, k_1, k_2, 
     R_0_dash, X_vv_dash, X_vr_dash, X_rr_dash, X_vvvv_dash, 
@@ -186,11 +185,6 @@ def set_mmg_params(k_0, k_1, k_2,
         N_rrr_dash=N_rrr_dash,
         R_0=0.5*basic_params.ρ*(basic_params.L_pp**2)*basic_params.d*R_0_dash
         )
-
-coefficients_file = "./input/149_coefficient_sample.csv"
-position_file = "./input/df_position.csv"
-velocity_file = "./input/df_velocity.csv"
-actuator_file = "./input/df_actuator.csv"
 
 def get_KVLCC2_L7model_basic_params(
     ρ = 1025.0,  # 海水密度
@@ -305,4 +299,3 @@ def get_149ship_basic_params(
     return set_basic_params(ρ, L_pp, B, d, nabla, x_G, C_b, D_p, H_R, A_R, t_P, w_P0,
                             m_x_dash, m_y_dash, J_z_dash, t_R, x_R_dash, a_H, x_H_dash,
                             γ_R_minus, γ_R_plus, l_r_dash, x_P_dash, ϵ, κ, f_α)
-
