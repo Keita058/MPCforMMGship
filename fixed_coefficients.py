@@ -1,13 +1,10 @@
-import csv
 import os
 import numpy as np
 import pandas as pd
 import do_mpc
 from casadi import vertcat
 from do_mpc.data import save_results, load_results
-
-blue='#1f77b4'
-yellow='#ff7f0e'
+from datetime import datetime
 
 #Certain parameters
 ρ = 1025.0  # 海水密度
@@ -132,11 +129,28 @@ def J(u,n_p):
 def T_P(u,n_p):
     return K_T(u,n_p)*ρ*n_p**2*D_p**4
 
+def get_time():
+    dt_now=datetime.now()
+    year=str(dt_now.year)
+    month=str(dt_now.month)
+    day=str(dt_now.day)
+    hour=str(dt_now.hour)
+    minute=str(dt_now.minute)
+    second=str(dt_now.second)
+    now_time=''
+    for strings in [year,month,day,hour,minute,second]:
+        if len(strings)==1:
+            strings='0'+strings
+        now_time=now_time+strings
+    return now_time
+
 
 control_duration=100
-dirname='./output'
+dirname='./output/output'
 n_horizon=100
 
+dt_now=get_time()
+dirname=dirname+dt_now
 os.makedirs(dirname,exist_ok=True)
 
 
@@ -295,7 +309,6 @@ for i in range(min(control_duration,n_steps)):
     x0=estimator.make_step(y_next)
 
 # remove past results
-import os
 os.remove("./results/results.pkl")
 
 # save present result
@@ -332,8 +345,6 @@ error=[]
 for i in range(min(control_duration,n_steps)):
     dist=(xc[i]-xc0_ref[i])**2+(yc[i]-yc0_ref[i])**2
     error.append(np.sqrt(dist))
-
-import pandas as pd
 
 t=np.linspace(0,min(control_duration,n_steps-1),min(control_duration,n_steps))
 df=pd.DataFrame({'time':t,
