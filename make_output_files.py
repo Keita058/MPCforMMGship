@@ -2,6 +2,12 @@ import numpy as np
 import pandas as pd
 import os
 
+def rad2deg(rads):
+    degs=list()
+    for rad in rads:
+        deg=rad*180/np.pi
+        degs.append(deg)
+    return degs
 class make_outputs:
     def __init__(self,results, mmg_params, mpc_params, input_files, dirname, sample_num):
         self.results=results
@@ -88,6 +94,11 @@ class make_outputs:
         u_ref,v_ref,r_ref=self.read_vel_data(input_files.velocity_file)
         npm_ref,delta_ref=self.read_act_data(input_files.actuator_file)
 
+        psi_ref=rad2deg(psi_ref)
+        psi=rad2deg(psi)
+        delta_ref=rad2deg(delta_ref)
+        delta=rad2deg(delta)
+
         control_duration=mpc_params.control_duration
         n_steps=len(psi_ref)
 
@@ -135,20 +146,20 @@ class make_outputs:
     def main(self):
         if self.sample_num is not None:
             self.dirname=self.dirname+'/sample'+str(self.sample_num)
-        
+
         os.makedirs(self.dirname)
 
         output_df=self.make_dataframe_from_results(self.results, self.mpc_params, self.input_files)
-        output_df.to_csv(self.dirname+'/output.csv',index=True)
+        output_df.to_csv(self.dirname+'/output.csv',index=False)
 
-        df_position=pd.read_csv(self.input_files.position_file)
-        df_position.to_csv(self.dirname+'/input_position.csv',index=True)
+        df_position=pd.read_csv(self.input_files.position_file,index_col=0)
+        df_position.to_csv(self.dirname+'/input_position.csv',index=False)
 
-        df_velocity=pd.read_csv(self.input_files.velocity_file)
-        df_velocity.to_csv(self.dirname+'/input_velocity.csv',index=True)
+        df_velocity=pd.read_csv(self.input_files.velocity_file,index_col=0)
+        df_velocity.to_csv(self.dirname+'/input_velocity.csv',index=False)
 
-        df_actuator=pd.read_csv(self.input_files.actuator_file)
-        df_actuator.to_csv(self.dirname+'/input_actuator.csv',index=True)
+        df_actuator=pd.read_csv(self.input_files.actuator_file,index_col=0)
+        df_actuator.to_csv(self.dirname+'/input_actuator.csv',index=False)
 
         df_mmg_coef = self.make_mmg_dataframe(self.mmg_params)
-        df_mmg_coef.to_csv(self.dirname+'/mmg_coefficients.csv',index=True)
+        df_mmg_coef.to_csv(self.dirname+'/mmg_coefficients.csv',index=False)

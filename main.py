@@ -1,12 +1,15 @@
 from do_mpc.data import load_results
 import get_parameters
 from MMG_maneuvering_model import MMG_model
-from MPC_execute import MPC_exe
+from Model_predictive_control import ModelPredictiveControl
 from make_output_files import make_outputs
+from make_graph import Make_Graphs
 from datetime import datetime
 import pandas as pd
 import random
 import numpy as np
+import os
+
 
 def get_time():
     dt_now=datetime.now()
@@ -23,16 +26,32 @@ def get_time():
         now_time=now_time+strings
     return now_time
 
-def main(input_files, basic_params, mmg_params, mpc_params, dirname, sample_num=None):
+def output_dirs(dir_path):
+    files=os.listdir(dir_path)
+    res_dirs_list=list()
+    for file in files:
+        file_path=dir_path+'/'+file
+        if os.path.isdir(file_path):
+            res_dirs_list.append(file_path)
+    if not res_dirs_list:
+        res_dirs_list.append(dir_path)
+    return res_dirs_list
 
-    MPC=MPC_exe(basic_params, mmg_params, mpc_params, input_files)
-    MPC.main()
+def main(input_files, basic_params, mmg_params, mpc_params, dir_path, sample_num=None):
+
+    MPC=ModelPredictiveControl(basic_params, mmg_params, mpc_params, input_files)
+    MMG=MMG_model(basic_params, mmg_params)
+    MPC.main(MMG)
 
     results = load_results('./results/results.pkl')
 
-    Output_Files = make_outputs(results, mmg_params, mpc_params, input_files, dirname, sample_num)
+    Output_Files = make_outputs(results, mmg_params, mpc_params, input_files, dir_path, sample_num)
     Output_Files.main()
 
+    output_dirs_list=output_dirs(dir_path)
+    for output_dir_path in output_dirs_list:
+        Graphs=Make_Graphs(output_dir_path)
+        Graphs.main()
 
 if __name__ == '__main__':
 
@@ -91,36 +110,36 @@ if __name__ == '__main__':
         )
 
     dt_now=get_time()
-    dirname='./output/output'+dt_now
+    dir_path='./output/output'+dt_now
 
     df_coef=pd.read_csv(input_files.coefficients_file)
 
-    average=False
+    average=True
     if average:
         df=df_coef.mean()
         mmg_params = get_parameters.set_mmg_params(
-            k_0=0.2931, 
-            k_1=-0.2753, 
+            k_0=0.2931,
+            k_1=-0.2753,
             k_2=-0.1385,
-            R_0_dash=df.R_0, 
-            X_vv_dash=df.X_vv, 
-            X_vr_dash=df.X_vr, 
-            X_rr_dash=df.X_rr, 
+            R_0_dash=df.R_0,
+            X_vv_dash=df.X_vv,
+            X_vr_dash=df.X_vr,
+            X_rr_dash=df.X_rr,
             X_vvvv_dash=df.X_vvvv,
-            Y_v_dash=df.Y_v, 
-            Y_r_dash=df.Y_r, 
-            Y_vvv_dash=df.Y_vvv, 
-            Y_vvr_dash=df.Y_vvr, 
-            Y_vrr_dash=df.Y_vrr, 
+            Y_v_dash=df.Y_v,
+            Y_r_dash=df.Y_r,
+            Y_vvv_dash=df.Y_vvv,
+            Y_vvr_dash=df.Y_vvr,
+            Y_vrr_dash=df.Y_vrr,
             Y_rrr_dash=df.Y_rrr,
-            N_v_dash=df.N_v, 
-            N_r_dash=df.N_r, 
-            N_vvv_dash=df.N_vvv, 
-            N_vvr_dash=df.N_vvr, 
-            N_vrr_dash=df.N_vrr, 
-            N_rrr_dash=df.N_rrr, 
+            N_v_dash=df.N_v,
+            N_r_dash=df.N_r,
+            N_vvv_dash=df.N_vvv,
+            N_vvr_dash=df.N_vvr,
+            N_vrr_dash=df.N_vrr,
+            N_rrr_dash=df.N_rrr,
             basic_params=basic_params)
-        main(input_files, basic_params, mmg_params, mpc_params, dirname)
+        main(input_files, basic_params, mmg_params, mpc_params, dir_path)
 
     else:
         num_list=[ i for i in range(1000)]
@@ -151,6 +170,6 @@ if __name__ == '__main__':
                 N_vrr_dash=df.N_vrr, 
                 N_rrr_dash=df.N_rrr, 
                 basic_params=basic_params)
-            main(input_files, basic_params, mmg_params, mpc_params, dirname, sample_num)
-    
+            main(input_files, basic_params, mmg_params, mpc_params, dir_path, sample_num)
+
     print("Program terminated successfully.")
