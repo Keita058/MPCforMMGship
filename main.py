@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     df_coef=pd.read_csv(input_files.coefficients_file)
 
-    average=True
+    average=False
     if average:
         df=df_coef.mean()
         mmg_params = get_parameters.set_mmg_params(
