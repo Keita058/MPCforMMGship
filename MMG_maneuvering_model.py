@@ -1,4 +1,3 @@
-import get_parameters
 import numpy as np
 
 
