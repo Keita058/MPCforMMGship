@@ -113,6 +113,7 @@ if __name__ == '__main__':
     dir_path='./output/output'+dt_now
 
     df_coef=pd.read_csv(input_files.coefficients_file)
+    num_of_samples=df_coef.shape[0]
 
     average=True
     if average:
@@ -142,10 +143,11 @@ if __name__ == '__main__':
         main(input_files, basic_params, mmg_params, mpc_params, dir_path)
 
     else:
-        num_list=[ i for i in range(1000)]
+        num_of_samples_to_run=5 #何個の微係数推定値セットでMPCを実行するか
+        num_list=[ i for i in range(num_of_samples)]
         random.shuffle(num_list)
 
-        for sample_num in num_list[:5]:
+        for sample_num in num_list[:num_of_samples_to_run]:
             print(sample_num)
             df=df_coef.iloc[sample_num]
             mmg_params = get_parameters.set_mmg_params(

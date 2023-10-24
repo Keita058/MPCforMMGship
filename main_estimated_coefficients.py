@@ -1,11 +1,14 @@
 from do_mpc.data import load_results
 import get_parameters
 from MMG_maneuvering_model import MMG_model
-from MPC_execute import MPC_exe
+from Model_predictive_control import ModelPredictiveControl
 from make_output_files import make_outputs
+from make_graph import Make_Graphs
 from datetime import datetime
 import pandas as pd
 import random
+import numpy as np
+import os
 
 def get_time():
     dt_now=datetime.now()
@@ -22,15 +25,32 @@ def get_time():
         now_time=now_time+strings
     return now_time
 
-def main(input_files, basic_params, mmg_params, mpc_params, dirname, sample_num=None):
+def output_dirs(dir_path):
+    files=os.listdir(dir_path)
+    res_dirs_list=list()
+    for file in files:
+        file_path=dir_path+'/'+file
+        if os.path.isdir(file_path):
+            res_dirs_list.append(file_path)
+    if not res_dirs_list:
+        res_dirs_list.append(dir_path)
+    return res_dirs_list
 
-    MPC=MPC_exe(basic_params, mmg_params, mpc_params, input_files)
-    MPC.main()
+def main(input_files, basic_params, mmg_params, mpc_params, dir_path, sample_num=None):
+
+    MPC=ModelPredictiveControl(basic_params, mmg_params, mpc_params, input_files)
+    MMG=MMG_model(basic_params, mmg_params)
+    MPC.main(MMG)
 
     results = load_results('./results/results.pkl')
 
-    Output_Files = make_outputs(results, mmg_params, mpc_params, input_files, dirname, sample_num)
+    Output_Files = make_outputs(results, mmg_params, mpc_params, input_files, dir_path, sample_num)
     Output_Files.main()
+
+    output_dirs_list=output_dirs(dir_path)
+    for output_dir_path in output_dirs_list:
+        Graphs=Make_Graphs(output_dir_path)
+        Graphs.main()
 
 if __name__ == '__main__':
 
@@ -47,6 +67,7 @@ if __name__ == '__main__':
     dirname='./output/output'+dt_now
 
     df_coef=pd.read_csv(input_files.coefficients_file)
+    num_of_samples=df_coef.shape[0]
 
     average=False
     if average:
@@ -58,10 +79,11 @@ if __name__ == '__main__':
         main(input_files, basic_params, mmg_params, mpc_params, dirname)
 
     else:
-        num_list=[ i for i in range(1000)]
+        num_of_samples_to_run=5 #何個の微係数推定値セットでMPCを実行するか
+        num_list=[ i for i in range(num_of_samples)]
         random.shuffle(num_list)
 
-        for sample_num in num_list[:5]:
+        for sample_num in num_list[:num_of_samples_to_run]:
             print(sample_num)
             df=df_coef.iloc[sample_num]
             mmg_params = get_parameters.set_mmg_params(0.2931, -0.2753, -0.1385,
@@ -69,5 +91,5 @@ if __name__ == '__main__':
                 df.Y_v, df.Y_r, df.Y_vvv, df.Y_vvr, df.Y_vrr, df.Y_rrr,
                 df.N_v, df.N_r, df.N_vvv, df.N_vvr, df.N_vrr, df.N_rrr, basic_params)
             main(input_files, basic_params, mmg_params, mpc_params, dirname, sample_num)
-    
+
     print("Program terminated successfully.")

@@ -1,9 +1,14 @@
 from do_mpc.data import load_results
 import get_parameters
 from MMG_maneuvering_model import MMG_model
-from MPC_execute import MPC_exe
+from Model_predictive_control import ModelPredictiveControl
 from make_output_files import make_outputs
-from datetime import datetime 
+from make_graph import Make_Graphs
+from datetime import datetime
+import pandas as pd
+import random
+import numpy as np
+import os
 
 def get_time():
     dt_now=datetime.now()
@@ -20,15 +25,34 @@ def get_time():
         now_time=now_time+strings
     return now_time
 
-def main(input_files, basic_params, mmg_params, mpc_params, dirname, sample_num=None):
+def output_dirs(dir_path):
+    files=os.listdir(dir_path)
+    res_dirs_list=list()
+    for file in files:
+        file_path=dir_path+'/'+file
+        if os.path.isdir(file_path):
+            res_dirs_list.append(file_path)
+    if not res_dirs_list:
+        res_dirs_list.append(dir_path)
+    return res_dirs_list
 
-    MPC=MPC_exe(basic_params, mmg_params, mpc_params, input_files)
-    MPC.main()
+
+def main(input_files, basic_params, mmg_params, mpc_params, dir_path, sample_num=None):
+
+    MPC=ModelPredictiveControl(basic_params, mmg_params, mpc_params, input_files)
+    MMG=MMG_model(basic_params, mmg_params)
+    MPC.main(MMG)
 
     results = load_results('./results/results.pkl')
 
-    Output_Files = make_outputs(results, mmg_params, mpc_params, input_files, dirname, sample_num)
+    Output_Files = make_outputs(results, mmg_params, mpc_params, input_files, dir_path, sample_num)
     Output_Files.main()
+
+    output_dirs_list=output_dirs(dir_path)
+    for output_dir_path in output_dirs_list:
+        Graphs=Make_Graphs(output_dir_path)
+        Graphs.main()
+
 
 if __name__ == '__main__':
 
