@@ -1,0 +1,2 @@
+n_horizon,t_step,n_robust,store_full_solution,δ_set,n_p_set,δ_max,δ_min,n_p_max,n_p_min,u_max,u_min,v_max,v_min,control_duration,model_type
+55,1,1,True,0.001,0.001,0.7853981633974483,-0.7853981633974483,50.0,0.0,15.0,0.0,10.0,-10.0,100,continuous

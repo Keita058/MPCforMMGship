@@ -44,7 +44,7 @@ def main(input_files, basic_params, mmg_params, mpc_params, dir_path, sample_num
 
     results = load_results('./results/results.pkl')
 
-    Output_Files = make_outputs(results, mmg_params, mpc_params, input_files, dir_path, sample_num)
+    Output_Files = make_outputs(results, basic_params, mmg_params, mpc_params, input_files, dir_path, sample_num)
     Output_Files.main()
 
     output_dirs_list=output_dirs(dir_path)

@@ -9,9 +9,10 @@ def rad2deg(rads):
         degs.append(deg)
     return degs
 class make_outputs:
-    def __init__(self,results, mmg_params, mpc_params, input_files, dirname, sample_num):
+    def __init__(self,results,basic_params, mmg_params, mpc_params, input_files, dirname, sample_num):
         self.results=results
         self.input_files=input_files
+        self.basic_params=basic_params
         self.mpc_params=mpc_params
         self.mmg_params=mmg_params
         self.dirname=dirname
@@ -67,6 +68,66 @@ class make_outputs:
             'N_vvr_dash':[mmg_params.N_vvr_dash],
             'N_vrr_dash':[mmg_params.N_vrr_dash],
             'N_rrr_dash':[mmg_params.N_rrr_dash],
+        })
+        return df
+    
+    def make_basic_params_dataframe(self, basic_params):
+        df=pd.DataFrame({
+            'ρ':[basic_params.ρ],
+            'L_pp':[basic_params.L_pp],
+            'B':[basic_params.B],
+            'd':[basic_params.d],
+            'nabla':[basic_params.nabla],
+            'x_G':[basic_params.x_G],
+            'C_b':[basic_params.C_b],
+            'D_p':[basic_params.D_p],
+            'H_R':[basic_params.H_R],
+            'A_R':[basic_params.A_R],
+            't_P':[basic_params.t_P],
+            'w_P0':[basic_params.w_P0],
+            'm_x_dash':[basic_params.m_x_dash],
+            'm_y_dash':[basic_params.m_y_dash],
+            'J_z_dash':[basic_params.J_z_dash],
+            't_R':[basic_params.t_R],
+            'x_R_dash':[basic_params.x_R_dash],
+            'a_H':[basic_params.a_H],
+            'x_H_dash':[basic_params.x_H_dash],
+            'γ_R_minus':[basic_params.γ_R_minus],
+            'γ_R_plus':[basic_params.γ_R_plus],
+            'l_r_dash':[basic_params.l_r_dash],
+            'x_P_dash':[basic_params.x_P_dash],
+            'ϵ':[basic_params.ϵ],
+            'κ':[basic_params.κ],
+            'f_α':[basic_params.f_α],
+            'm':[basic_params.m],
+            'I_zG':[basic_params.I_zG],
+            'η':[basic_params.η],
+            'm_x':[basic_params.m_x],
+            'm_y':[basic_params.m_y],
+            'J_z':[basic_params.J_z],
+            'x_H':[basic_params.x_H],
+            'x_R':[basic_params.x_R],
+        })
+        return df
+
+    def make_mpc_params_dataframe(self, mpc_params):
+        df=pd.DataFrame({
+            'n_horizon':[mpc_params.n_horizon],
+            't_step':[mpc_params.t_step],
+            'n_robust':[mpc_params.n_robust],
+            'store_full_solution':[mpc_params.store_full_solution],
+            'δ_set':[mpc_params.δ_set],
+            'n_p_set':[mpc_params.n_p_set],
+            'δ_max':[mpc_params.δ_max],
+            'δ_min':[mpc_params.δ_min],
+            'n_p_max':[mpc_params.n_p_max],
+            'n_p_min':[mpc_params.n_p_min],
+            'u_max':[mpc_params.u_max],
+            'u_min':[mpc_params.u_min],
+            'v_max':[mpc_params.v_max],
+            'v_min':[mpc_params.v_min],
+            'control_duration':[mpc_params.control_duration],
+            'model_type':[mpc_params.model_type],
         })
         return df
 
@@ -163,3 +224,9 @@ class make_outputs:
 
         df_mmg_coef = self.make_mmg_dataframe(self.mmg_params)
         df_mmg_coef.to_csv(self.dirname+'/mmg_coefficients.csv',index=False)
+
+        df_basic_params = self.make_basic_params_dataframe(self.basic_params)
+        df_basic_params.to_csv(self.dirname+'/basic_params.csv',index=False)
+
+        df_mpc_params = self.make_mpc_params_dataframe(self.mpc_params)
+        df_mpc_params.to_csv(self.dirname+'/mpc_params.csv',index=False)
