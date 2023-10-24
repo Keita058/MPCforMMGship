@@ -56,12 +56,29 @@ if __name__ == '__main__':
 
     input_files = get_parameters.set_input_file_names(
     coefficients_file = "./input/149_coefficient_sample.csv",
-    position_file = "./input/df_position.csv",
-    velocity_file = "./input/df_velocities.csv",
-    actuator_file = "./input/df_actuator.csv")
+    position_file = "./input/df_149_position.csv",
+    velocity_file = "./input/df_149_velocity.csv",
+    actuator_file = "./input/df_149_actuator.csv")
 
     basic_params = get_parameters.get_149ship_basic_params()
-    mpc_params = get_parameters.get_default_mpc_params()
+    mpc_params = get_parameters.set_mpc_params(
+        n_horizon = 55, #予測区間の長さ
+        t_step = 1, #time step
+        n_robust = 1, #制御区間の長さ
+        store_full_solution = True, #
+        δ_set = 1e-3, #評価関数の舵角の変化量に対する重み
+        n_p_set = 1e-3, #評価関数のプロペラ回転数の変化量に対する重み
+        δ_max = 45.0*np.pi/180.0, #制御入力として指示できる舵角の最大値
+        δ_min = -45.0*np.pi/180.0, #制御入力として指示できる舵角の最小値
+        n_p_max = 50.0, #制御入力として指示できるプロペラ回転数の最大値
+        n_p_min = 0.0, #制御入力として指示できるプロペラ回転数の最小値
+        u_max = 15.0, #状態量の船舶の前後方向速度の最大値
+        u_min = 0.0, #状態量の船舶の前後方向速度の最小値
+        v_max = 10.0, #状態量の船舶の横方向速度の最大値
+        v_min = -10.0, #状態量の船舶の横方向速度の最小値
+        control_duration = 100, #制御を行う時間
+        model_type = 'continuous' # either 'discrete' or 'continuous'
+        )
 
     dt_now=get_time()
     dirname='./output/output'+dt_now
