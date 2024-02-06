@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     basic_params = get_parameters.get_149ship_basic_params()
     mpc_params = get_parameters.set_mpc_params(
-        n_horizon = 55, #予測区間の長さ
+        n_horizon = 100, #予測区間の長さ
         t_step = 1, #time step
         n_robust = 1, #制御区間の長さ
         store_full_solution = True, #
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         main(input_files, basic_params, mmg_params, mpc_params, dirname)
 
     else:
-        num_of_samples_to_run=5 #何個の微係数推定値セットでMPCを実行するか
+        num_of_samples_to_run=30 #何個の微係数推定値セットでMPCを実行するか
         num_list=[ i for i in range(num_of_samples)]
         random.shuffle(num_list)
 
