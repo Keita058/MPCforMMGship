@@ -56,9 +56,9 @@ if __name__ == '__main__':
 
     input_files = get_parameters.set_input_file_names(
     coefficients_file = "./input/149_coefficient_sample.csv",
-    position_file = "./input/df_149_position.csv",
-    velocity_file = "./input/df_149_velocity.csv",
-    actuator_file = "./input/df_149_actuator.csv")
+    position_file = "./input/df_position.csv",
+    velocity_file = "./input/df_velocity.csv",
+    actuator_file = "./input/df_actuator.csv")
 
     basic_params = get_parameters.get_149ship_basic_params()
     mpc_params = get_parameters.set_mpc_params(

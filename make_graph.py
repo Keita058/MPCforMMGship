@@ -52,7 +52,7 @@ class Make_Graphs:
         fig=plt.figure(figsize=(figsize_X*scale,figsize_Y*scale))
 
         if compare:
-            plt.plot(xc_ref,yc_ref,color=yellow,label='model ship',ls='--')
+            plt.plot(xc_ref,yc_ref,color=yellow,label='shipmmg',ls='--')
             plt.plot(xc,yc,color=blue,label='MPC')
 
         else:
@@ -65,9 +65,10 @@ class Make_Graphs:
         dist_X=((max_X-min_X+X_plus*2+99)//100)*10
         plt.xticks(list(filter(lambda x: x%dist_X==0, np.arange(int(min_X-X_plus),int(max_X+X_plus)))))
         plt.yticks(list(filter(lambda x: x%dist_Y==0, np.arange(int(min_Y-Y_plus),int(max_Y+Y_plus)))))
-        plt.xlabel('X[m]',fontsize=24)
-        plt.ylabel('Y[m]',fontsize=24)
+        plt.xlabel(r'$X[m]$',fontsize=24)
+        plt.ylabel(r'$Y[m]$',fontsize=24)
         plt.tick_params(labelsize=24)
+        plt.grid()
         plt.legend(fontsize=18)
         plt.tight_layout()
         if compare:
@@ -79,8 +80,8 @@ class Make_Graphs:
     def error_image(self):
         fig=plt.figure(figsize=(16,4))
         plt.plot(self.df['time'],self.df['error'],color=blue)
-        plt.xlabel('time[s]',fontsize=24)
-        plt.ylabel('error[m]',fontsize=24)
+        plt.xlabel(r'$time[s]$',fontsize=24)
+        plt.ylabel(r'$error[m]$',fontsize=24)
         plt.minorticks_on()
         plt.grid(which='both',color='gray',ls='--',axis="y")
         plt.tick_params(labelsize=24)
